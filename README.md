@@ -5,7 +5,14 @@ Within is a proposed CI/CD Setup and several code standards to follow, so that a
 
 ## Table of Contents
 
-## Git Workflow
+## Terminology
+
+| Term                            | Meaning                                                                                                                                                                                                                 |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Continious Integration (**CI**) | Continuous Integration (CI) automates the process of testing and building your code before merging it. In practice, developers should commit or integrate their changes to the main shared repo once-per-day (or more). |
+| Continuous Deployment (**CD**)  | Continuous Deployment (CD) automatically releases new production code to users. It is the step that happens after new code has been integrated.                                                                         |
+
+## Git
 
 ### Git Rules
 
@@ -166,11 +173,10 @@ Having a good guideline for creating commits and sticking to it makes working wi
 
 **Tools:** Github Actions, Docker, circleci
 
-| Tool             | Description                       |
-| :--------------- | :-------------------------------- |
-| `Github Actions` | **Required**. Id of item to fetch |
-| `CircleCI`       |                                   |
-| `StoryBlock`     |                                   |
+| Tool             | Description                                              |
+| :--------------- | :------------------------------------------------------- |
+| `Github Actions` | **Required**. Id of item to fetch                        |
+| `StoryBlock`     | Used to show catelog and display global brand components |
 
 ## Environments
 
@@ -181,7 +187,165 @@ Having a good guideline for creating commits and sticking to it makes working wi
 | STAGE       | allow the application's main users to test new features before they are pushed into the production environment             | N/A |
 | PROD        | The live environment made available to all users                                                                           | N/A |
 
-### Dev
+## Github Actions [automation]
+
+### GA Terms
+
+| Term          | Purpose                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Runners**   | These are hosted virtual operating systems that could run commands to carry out a build process.                                                                                                                                                                                                                                                                                |
+| **Workflows** | These are laid out instructions that give the Github Action application on a runner. Workflow instructions are defined in a YAML file and live inside of the .github/workflows folder in a git repository. The name of a workflow file does not have a correlation with the intention of the file, as Github parses and runs every file inside of the .github/workflows folder. |
+| **Events**    | For a Workflow file to be processed and executed, an event is required.                                                                                                                                                                                                                                                                                                         |
+| **Jobs**      | Async or Sync series of steps carried out within any given workflow.                                                                                                                                                                                                                                                                                                            |
+| **Steps**     | These are the single elements that make up a job. A step groups the actions that are carried out on a runner.                                                                                                                                                                                                                                                                   |
+| **Actions**   | An action is an element of a step and is basically a command.                                                                                                                                                                                                                                                                                                                   |
+
+### Creating and Maintaining Secrets
+
+Throughout our CI/CD System there are a number of secrets which must be created and maintained so that they can be used in our github actions.
+
+**Important : Keep secrets, managed by implimenting privilages on them**
+[Implimenting Lease Privilage for secrets in github actions](https://github.blog/2021-04-13-implementing-least-privilege-for-secrets-in-github-actions/)
+
+#### Managing Secrets
+
+1. Go to the github repositiory you wish to work on.
+2. Go to the `Settings` Tab.
+3. Select `Secrets`
+4. Name your secret
+   1. **I.E** 'MY_SECRET_KEY'
+5. Add the secret value below the name.
+6. Press save.
+
+**NOTE : By default, secrets are not made available to workflows and jobs, to have access to secrets, you have to request them at the steps that they are required.**
+[Managing Secrets](https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#storing-secrets)
+
+
+
+### Workflows
+
+#### Project Aurora Github Action table
+
+
+| Workflow                       | Purpose                                                                                                                                                                                                                                                                                                    | Branch     | Initiate With | Fail                                                                                   | Pass                                                                 |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| branch-overwatch.yml(optional) | A new branch is created within the repository                                                                                                                                                                                                                                                              | ${x}       | created       | N/A                                                                                    | Notify stakeholders that work has begun through a slack message etc. |
+| dev-pull.yml                   | Tests pull requests into the TEST branch against developers feature pr                                                                                                                                                                                                                                     | TEST       | pull_request  | denys the pr                                                                           | marks the pr as succesfull                                           |
+| dev-push.yml                   | When the maintainer of the TEST branch approves pull requests into TEST this action will kick off a build and deploy it to the TEST server                                                                                                                                                                 | push       | push          | doesnt deploy the built code to dev server, and requires failed conditions to be fixed | Deploys built code to dev server                                     |
+| stage-push.yml                 | After the TEST server has been verified by the QA Team the repo maintainer can initiate a push request into STAGE (or Prod if no UAT testing required) this workflow will perform tests, and also run utility scripts such as compressing images, finally it will produce a new build and deploy it to AWS | STAGE      | push          | Create issues, dissalow from code deployment                                           | Deploys code to STAGE server                                         |
+| prod-push.yml                  | After the TEST server has been verified by the QA Team the repo maintainer can initiate a push request into STAGE (or Prod if no UAT testing required) this workflow will perform tests, and also run utility scripts such as compressing images, finally it will produce a new build and deploy it to AWS | PRODUCTION | push          | Create issues, dissalow from code deployment                                           | Deploys code to STAGE server                                         |
+
+#### branch-overwatch.yml
+
+**Features**
+
+**Flow**
+
+
+**code**
+
+```
+todo
+```
+
+#### dev-pull.yml
+
+**Features**
+
+**Flow**
+
+
+**code**
+
+```
+todo
+```
+
+#### dev-push.yml
+
+**Features**
+
+**Flow**
+
+
+**code**
+
+```
+todo
+```
+
+#### stage-push.yml
+
+**Features**
+
+**Flow**
+
+
+**code**
+
+```
+todo
+```
+
+#### prod-push.yml
+
+**Features**
+
+**Flow**
+
+**code**
+
+```
+todo
+```
+
+### Getting Started
+
+Before entering the development cycle, or contributing to the project in any way ensure that you are fully aware of both your role, and that you have the tools for the job.
+
+#### Developer Checklist
+
+[x] IDE Setup and configured to match MK Organization
+[x] Access to Workflow tools
+[x] Environment variables
+[x] Clear understanding of Git
+[x] Install and set up nvm (__node version manager__)
+
+*Dev Environment Variables*
+To work in dev you will need the following environment variables
+
+|  Key  | Value | Description | Secret |
+| :---: | :---: | :---------: | :----: |
+| todo  | todo  |    todo     | __Y__  |
+
+#### Sys Admin Checklist
+
+[x] IDE Setup and configured to match MK Organization
+[x] Access to Workflow tools
+[x] Environment variables
+[x] Clear understanding of Git
+
+*Dev Environment Variables*
+To work in dev you will need the following environment variables
+
+|  Key  | Value | Description | Secret |
+| :---: | :---: | :---------: | :----: |
+| todo  | todo  |    todo     | __Y__  |
+
+*Test Env Variables*
+To work in dev you will need the following environment variables
+
+|  Key  | Value | Description | Secret |
+| :---: | :---: | :---------: | :----: |
+| todo  | todo  |    todo     | __Y__  |
+
+#### QA Checklist
+
+[x] Ensure you have Accessibility testing tools (Axe)
+[x] Ensure you understand the *feature* scope
+[x] Ensure you have a basic understanding of git and git workflows
+
+### Development Branch
 
 **Who Belongs in this branch?**
 
@@ -202,39 +366,91 @@ To make it to stage a piece of code must meet the following guidlines.
 * [x] Basic Integration Testion Complete
 * [x] Code Style and formatting compatible with project guidlines
 * [x] Remove All Console Logging
+* [x] Ensure No Secrets have been included
 
-### Quick Links
+#### Overview
 
-[Working Dev Branch (TODO)](https://github.com)
-[Development URL (TODO)](https://github.com)
+1. Developers are assigned tasks
+2. Developers Create a feature branch for their task
+3. Developers Complete their task, and write tests for their new code.
+4. Developers Open A pull request into the main development working branch
+5. Github Action  
 
-### Automations
+#### New Feature Dev steps
 
-* [] TODO
+**First** All 'Features' Are developed off of the master branch (latest code).
+
+```
+# Switches repo to master branch
+git checkout master
+
+# Pulls latest
+git fetch origin
+
+# Resets repos local copy of master to match latest
+git reset --hard origin/master
+```
+
+**Second** Create a new branch for your feature
+
+```
+#Checks out a branch called feature/${your-feature-name}
+
+git checkout -b feature/example-new-feature
+
+```
+
+**While Developing** Update, add, commit, and push changes
+
+```
+git status
+git add <filename>
+git commit
+```
+
+**Important** Push your new feature branch to remote to allow other developers to see the work in progress as well as backup your code
+```
+git push -u origin feature/${your-feature-name}
+```
+
+**Finally** When you are finished with your feature, create a pull request on the Main Development branch. If no conflicts arise, the maintainer will merge the code.
 
 
-### Environment Variables
 
-To work in dev you will need the following environment variables
+#### As a Developer
 
-| Variable | Description                                                                                                                | KEY |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------- | --- |
-| `Telium` |  | N/A |
-| `Stripe Test Key`        | N/A | N/A |
-| `Google API Key`        | N/A | N/A |
+As a developer it is important before you create any pull requests, against the main development branch you at the bare mininum run the following commands locally.
 
+**Run *unit* tests**
 
-### Resources
+```bash
+yarn test:unit
+```
 
-* [] TODO
+**Run *e2e* tests**
 
-| Resource | Description | URL |
-| ------| -----| ---- |
-| IDE | Visual studio code | | |
-| IDE Setup | Pre-configured vscode configuration download | |  
-| Unit Testing | | |
-| Repo | Github Repository | |
-| Component Library | Molekule Brand Component Library | |
+```bash
+yarn test:e2e
+```
+
+**Run *all* tests**
+
+```bash
+yarn test
+```
+
+**Make sure everything runs and functions correctly**
+
+```bash
+yarn dev
+```
+
+**Make sure you have no linting errors**
+
+```bash
+yarn lint
+```
+
 
 ### Test
 
@@ -251,67 +467,88 @@ To work in dev you will need the following environment variables
 
 ### Pre-Prod (UAT)
 
-```http
-  GET /api/items/${id}
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
-
 ### Prod
 
-```http
-  GET /api/items/${id}
-```
+## Handling Hedge Cases
 
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
+### Stage Defects found
 
-## Authors
+**If a defect is found in UAT/Stage, it is recommended to perform all fixes in the TEST environment, and then to re-deploy the fixed version to PROD.**
 
-* [@katherinepeterson](https://www.github.com/katherinepeterson)
+### Test Defects found
 
-## Badges
+**If Defects are found in TEST, do not send the build to STAGE or PROD, document the issues and send them back to DEV**
 
-Add badges from somewhere like: [shields.io](https://shields.io/)
+### Stage Defects found
 
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
-[![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
+***IF* a defect is found in UAT/Stage, it is recommended to perform all fixes in the TEST environment, and then to re-deploy the fixed version to PROD.**
 
-## Contributing
+### Production defects found
 
-Contributions are always welcome!
+***IF* a bug is found in production, perform all fixes in the TEST/QA environment, and then to re-deploy the fixed version to STAGE. This ensures that any continuing development being performed in the DEV environment is not disrupted.**
 
-See `contributing.md` for ways to get started.
+### Test Environment Fales
 
-Please adhere to this project's `code of conduct`.
+**If a defect is found in production, it is recommended to perform all fixes in the TEST environment, and then to re-deploy the fixed version to PROD. This practice ensures that any continuing development being performed in the DEV environment is not disrupted.**
 
-## Demo
+### FE Settings and Configurations
 
-Insert gif or link to demo
+#### Scripts
+Listed within are all of the available scripts and their purposes
 
-## Deployment
+#### Directory and Naming Conventions
 
-To deploy this project run
+#### Code Style Lint
 
-```bash
-  npm run deploy
-```
+#### Code Quality Tools
 
-## Documentation
-
-[Documentation](https://linktodocumentation)
-
-
-## Roadmap
-
-## Resources
+## Resources and Links
 
 * [Nuxt](https://nuxtjs.org/)
 * [Vue](https://cli.vuejs.org/)
 * [Github Actions](https://github.com/features/actions)
 * [Vue Testing Framework](https://vue-test-utils.vuejs.org/)
 * [Feature Branch Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow)
+
+### Repositories and Release Branches
+
+[Test Branch (TODO)](https://github.com)
+[URL (TODO)](https://github.com)
+
+[Stage Branch (TODO)](https://github.com)
+[URL (TODO)](https://github.com)
+
+[Production Branch (TODO)](https://github.com)
+[URL (TODO)](https://github.com)
+
+### Developer Resources
+
+| Resource                   | Description                                  | URL                                     |
+| -------------------------- | -------------------------------------------- | --------------------------------------- |
+| IDE                        | Visual studio code                           |                                         |  |
+| IDE Setup                  | Pre-configured vscode configuration download |                                         |
+| Unit Testing               |                                              |                                         |
+| Repo                       | Github Repository                            |                                         |
+| Component Library          | Molekule Brand Component Library             |                                         |
+| Node Version Manager (nvm) | Node version manager                         | [github](https://github.com/nvm-sh/nvm) |
+| Yarn                       |                                              | [github](https://github.com)            |
+| Jira| Primary Source of truth for planning and tasks  | [jira](https://jira.com) |
+
+
+### Role Hierarchy and Permissions
+
+- Maintainer
+  - Name :
+  - Contact :
+  - Permissions :
+- QA Lead :
+  - Name :
+  - Contact :
+  - Permissions :
+- PM :
+  - Name :
+  - Contact :
+  - Permissions :
+
+
+
